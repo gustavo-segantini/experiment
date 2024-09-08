@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using System.Text.Json.Serialization;
 using Bank.Configuration;
+using Bank.Repository;
+using Bank.Services;
 using MediatR;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -15,6 +17,11 @@ public class Startup(IConfiguration configuration)
     {
         services.AddControllers().AddJsonOptions(options =>
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+        services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
+
+        services.AddSingleton<IBalanceRepository, BalanceRepository>();
+        services.AddSingleton<IBalanceService, BalanceService>();
 
         services.AddSwaggerGen(c =>
         {
@@ -40,7 +47,10 @@ public class Startup(IConfiguration configuration)
             c.RoutePrefix = string.Empty;
         });
 
-        app.UseSerilogRequestLogging(); // Enable Serilog request logging
+        app.UseSerilogRequestLogging(c =>
+        {
+            c.IncludeQueryInRequestPath = true;
+        }); // Enable Serilog request logging
 
         app.UseRouting();
         app.UseEndpoints(endpoints =>
