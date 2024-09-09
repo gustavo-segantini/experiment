@@ -1,8 +1,6 @@
-﻿using Bank.Models;
-using Bank.Models.Request;
+﻿using Bank.Models.Request;
 using Bank.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Bank.Controllers
 {

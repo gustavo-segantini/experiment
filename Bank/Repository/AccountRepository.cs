@@ -2,7 +2,7 @@
 
 public class AccountRepository : IAccountRepository
 {
-    private static readonly Dictionary<string, decimal> Accounts = new Dictionary<string, decimal>();
+    private static readonly Dictionary<string, decimal> Accounts = new();
 
     public decimal? GetBalance(string accountId)
     {
@@ -44,4 +44,3 @@ public class AccountRepository : IAccountRepository
         Accounts.Clear();
     }
 }
-

@@ -8,7 +8,7 @@
 
     public class Account
     {
-        public required string? Id { get; set; }
-        public required decimal Balance { get; set; }
+        public string? Id { get; set; }
+        public decimal Balance { get; set; }
     }
 }

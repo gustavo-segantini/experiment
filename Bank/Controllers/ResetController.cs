@@ -1,5 +1,4 @@
 ﻿using Bank.Services;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bank.Controllers
