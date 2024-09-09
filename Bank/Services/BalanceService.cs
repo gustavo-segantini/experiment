@@ -1,43 +1,65 @@
 ﻿using Bank.Models;
+using Bank.Models.Request;
+using Bank.Models.Response;
 using Bank.Repository;
 
 namespace Bank.Services;
 
-public class BalanceService(IBalanceRepository balanceRepository, ILogger<BalanceService> logger)
+public class BalanceService(IAccountRepository accountRepository, ILogger<BalanceService> logger)
     : IBalanceService
 {
 
-    public decimal GetBalance()
+    public decimal? GetBalance(string accountId)
     {
-        var balance = balanceRepository.GetBalance();
+        var balance = accountRepository.GetBalance(accountId);
 
-        logger.LogInformation("Current balance is {balance}", balance);
+        logger.LogInformation("Balance for account {AccountId} is {Balance}", accountId, balance);
 
         return balance;
     }
 
-    public void UpdateBalance(Transaction transaction)
+    public Movement? Movement(Transaction transaction)
     {
-        var balance = balanceRepository.GetBalance();
-        var balanceUpdated = CalculateBalance(transaction, balance);
+        var originBalance = 0m;
+        var destinationBalance = 0m;
 
-        logger.LogInformation("Updating balance from {oldBalance} to {newBalance}", balance, balanceUpdated);
+        switch (transaction.Type)
+        {
+            case MovementType.Withdraw:
+                originBalance = accountRepository.Withdraw(transaction.Origin, transaction.Amount);
+                break;
+            case MovementType.Deposit:
+                destinationBalance = accountRepository.Deposit(transaction.Origin ?? transaction.Destination, transaction.Amount);
+                break;
+            case MovementType.Transfer:
+                (originBalance, destinationBalance) = accountRepository.Transfer(transaction.Origin, transaction.Destination, transaction.Amount);
+                break;
+            default:
+                logger.LogWarning("Unknown transaction type {TransactionType}", transaction.Type);
 
-        balanceRepository.UpdateBalance(balanceUpdated);
+                return null;
+        }
+
+        return new Movement
+        {
+            Origin = originBalance == 0 ? null : new Account
+            {
+                Id = transaction.Destination ?? transaction.Origin,
+                Balance = originBalance
+            },
+            Destination = destinationBalance == 0m ? null : new Account
+            {
+                Id = transaction.Destination ?? transaction.Origin,
+                Balance = destinationBalance
+            }
+        };
     }
 
-    private static decimal CalculateBalance(Transaction transaction, decimal balance)
+    public void Reset()
     {
-        if (transaction.Type == MovementType.Credit)
-        {
-            balance += transaction.Amount;
-        }
-        else if (transaction.Type == MovementType.Debit)
-        {
-            balance -= transaction.Amount;
-        }
+        logger.LogInformation("Resetting all accounts");
 
-        return balance;
+        accountRepository.Reset();
     }
 }
 

@@ -1,29 +1,20 @@
-﻿using Bank.Models;
-using Bank.Services;
-using MediatR;
+﻿using Bank.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bank.Controllers;
 
-public class BalanceController(IMediator mediator, IBalanceService balanceService, ILogger<BalanceController> logger) : Controller
+public class BalanceController(IBalanceService balanceService, ILogger<BalanceController> logger) : Controller
 {
     [HttpGet("balance")]
-    public ActionResult<Balance> GetBalance()
+    public IActionResult GetBalance([FromQuery] string account_id)
     {
-        var balance = balanceService.GetBalance();
+        var balance = balanceService.GetBalance(account_id);
 
-        logger.LogInformation("Current balance is {balance}", balance);
+        if (balance == null)
+        {
+            return NotFound(0);
+        }
 
-        return Ok(new Balance { Amount = balance });
-    }
-
-    [HttpPost("event")]
-    public IActionResult PostEvent([FromBody] Transaction transaction)
-    {
-        logger.LogInformation("Received event: {@transaction}", transaction);
-
-        balanceService.UpdateBalance(transaction);
-
-        return Ok();
+        return Ok(balance);
     }
 }

@@ -1,10 +1,14 @@
-﻿using Bank.Models;
+﻿using Bank.Models.Request;
+using Bank.Models.Response;
 
 namespace Bank.Services
 {
     public interface IBalanceService
     {
-        decimal GetBalance();
-        void UpdateBalance(Transaction transaction);
+        decimal? GetBalance(string accountId);
+
+        Movement? Movement(Transaction transaction);
+
+        void Reset();
     }
 }

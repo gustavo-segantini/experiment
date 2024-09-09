@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Bank.Configuration;
 using Bank.Repository;
@@ -15,19 +16,25 @@ public class Startup(IConfiguration configuration)
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers().AddJsonOptions(options =>
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+        services
+            .AddControllers()
+            .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+            options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
+        });
 
         services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 
-        services.AddSingleton<IBalanceRepository, BalanceRepository>();
+        services.AddSingleton<IAccountRepository, AccountRepository>();
         services.AddSingleton<IBalanceService, BalanceService>();
 
         services.AddSwaggerGen(c =>
         {
             c.UseInlineDefinitionsForEnums();
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Bank API", Version = "v1" });
-            c.SchemaFilter<EnumSchemaFilter>();
         });
 
         services.AddMediatR(Assembly.GetExecutingAssembly());

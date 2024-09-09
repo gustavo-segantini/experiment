@@ -2,6 +2,7 @@
 
 public enum MovementType
 {
-    Credit,
-    Debit
+    Deposit,
+    Withdraw,
+    Transfer
 }
