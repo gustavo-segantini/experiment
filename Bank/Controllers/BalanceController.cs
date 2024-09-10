@@ -8,6 +8,13 @@ public class BalanceController(IBalanceService balanceService, ILogger<BalanceCo
     [HttpGet("balance")]
     public IActionResult GetBalance([FromQuery] string account_id)
     {
+        if (string.IsNullOrWhiteSpace(account_id))
+        {
+            logger.LogError("Account ID is required");
+
+            return BadRequest("Account ID is required");
+        }
+
         var balance = balanceService.GetBalance(account_id);
 
         if (balance == null)

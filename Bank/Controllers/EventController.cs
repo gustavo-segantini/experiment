@@ -10,6 +10,13 @@ namespace Bank.Controllers
         [HttpPost("event")]
         public IActionResult PostEvent([FromBody] Transaction transaction)
         {
+            if (transaction is null)
+            {
+                logger.LogError("Transaction is required");
+
+                return BadRequest("Transaction is required");
+            }
+
             var movement = balanceService.Movement(transaction);
 
             return movement?.Destination is null && movement?.Origin is null ?
