@@ -1,4 +1,5 @@
 ﻿using Bank.Models.Request;
+using Bank.Models.Response;
 using Bank.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,11 @@ namespace Bank.Controllers
     public class EventController(IBalanceService balanceService, ILogger<BalanceController> logger) : ControllerBase
     {
         [HttpPost("event")]
+        [ProducesResponseType(typeof(Movement), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
+        [Consumes("application/json")]
         public IActionResult PostEvent([FromBody] Transaction transaction)
         {
             if (transaction is null)

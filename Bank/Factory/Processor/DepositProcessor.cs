@@ -8,6 +8,11 @@ public class DepositProcessor : ITransactionProcessor
 {
     public Movement Process(Transaction transaction, IAccountRepository accountRepository)
     {
+        if (transaction.Destination == null)
+        {
+            throw new ArgumentNullException(nameof(transaction.Destination), "Destination account ID cannot be null.");
+        }
+
         var destinationBalance = accountRepository.Deposit(transaction.Destination, transaction.Amount);
 
         return new Movement

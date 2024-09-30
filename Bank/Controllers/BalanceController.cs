@@ -6,6 +6,12 @@ namespace Bank.Controllers;
 public class BalanceController(IBalanceService balanceService, ILogger<BalanceController> logger) : Controller
 {
     [HttpGet("balance")]
+    [ProducesResponseType(typeof(decimal), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+
     public IActionResult GetBalance([FromQuery] string account_id)
     {
         if (string.IsNullOrWhiteSpace(account_id))

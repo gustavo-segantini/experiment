@@ -2,7 +2,7 @@
 
 public class AccountRepository : IAccountRepository
 {
-    private static readonly Dictionary<string, decimal> Accounts = new();
+    private static readonly Dictionary<string, decimal> Accounts = [];
 
     public decimal? GetBalance(string accountId)
     {
